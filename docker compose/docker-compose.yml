@@ -1,0 +1,52 @@
+services:
+
+  frontend:
+    image: vinitparmar03/shopnest_frontend
+
+    build:
+      context: ../frontend
+      dockerfile: dockerfile
+      args:
+        REACT_APP_RAZORPAY_KEY_ID: ${REACT_APP_RAZORPAY_KEY_ID}
+
+    container_name: shopnest_frontend
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  backend:
+    image: vinitparmar03/shopnest_backend
+
+    build:
+      context: ../backend
+      dockerfile: dockerfile
+
+    container_name: shopnest_backend
+
+    env_file:
+      - ../backend/.env
+
+    ports:
+      - "5000:5000"
+
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+
+    restart: unless-stopped

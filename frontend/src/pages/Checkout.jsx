@@ -18,13 +18,15 @@ const Checkout = () => {
 
   const handlePayment = async () => {
     try {
+      console.log('Initiating payment...');
       const orderRes = await fetch('/api/payment/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: totalPrice })
       });
+      console.log('Order response received:', orderRes);
       const orderData = await orderRes.json();
-
+      console.log('Order data:', orderData);
       if (!orderRes.ok) {
         // Razorpay unconfigured exception handler
         const fallback = window.confirm("Razorpay keys unconfigured on backend. Use Student Bypass Mode to place test order?");
@@ -34,9 +36,10 @@ const Checkout = () => {
           return alert("Payment failed to initialize");
         }
       }
+      console.log('Razorpay order created successfully:', orderData);
 
       const options = {
-        key: 'rzp_test_dummykey123', // Student dummy fallback
+        key: process.env.REACT_APP_RAZORPAY_KEY_ID, // Student dummy fallback
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'ShopNest',

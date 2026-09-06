@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    
+    spec:
+      containers:
+        - name: shopnest-frontend
+          image: vinitparmar03/shopnest_frontend:01
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 5
+            initialDelaySeconds: 60
+
