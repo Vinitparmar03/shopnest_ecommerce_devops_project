@@ -1,25 +1,13 @@
-# values.yml
 prometheus:
   enabled: true
-  
 
   ingress:
-    enabled: true
-    ingressClassName: nginx
-
-    hosts:
-      - prometheus.a1320314044f548ffbec89a1f9b6d56e-920795038.ap-south-1.elb.amazonaws.com
-    
-    paths:
-      - /
-    
-    pathType: Prefix
+    enabled: false
 
   prometheusSpec:
     serviceMonitorSelector:
       matchLabels:
         release: monitoring
-
 
 grafana:
   enabled: true
@@ -28,12 +16,4 @@ grafana:
   adminPassword: admin
 
   ingress:
-    enabled: true
-    ingressClassName: nginx
-
-    hosts:
-      - grafana.a1320314044f548ffbec89a1f9b6d56e-920795038.ap-south-1.elb.amazonaws.com/
-    
-    path: /
-    
-    pathType: Prefix
+    enabled: false
