@@ -127,7 +127,7 @@ pipeline {
                         ]) {
 
                             sh '''
-                                docker build --progress=plain\
+                                docker build \
                                   --build-arg REACT_APP_RAZORPAY_KEY_ID="$RAZORPAY_KEY_ID" \
                                   -t "$FRONTEND_IMAGE:$FRONTEND_VERSION" \
                                   ./frontend
@@ -180,7 +180,7 @@ pipeline {
                         sh """
                             kubectl set image \
                               deployment/frontend-deployment \
-                              frontend=${FRONTEND_IMAGE}:${FRONTEND_VERSION} \
+                              shopnest-frontend=${FRONTEND_IMAGE}:${FRONTEND_VERSION} \
                               -n ${K8S_NAMESPACE}
 
                             kubectl rollout status \
