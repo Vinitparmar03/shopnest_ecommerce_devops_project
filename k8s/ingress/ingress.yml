@@ -27,7 +27,7 @@ spec:
                 port:
                   number: 5000
 
-          # Prometheus Monitor
+          # Prometheus Monitoring
           - path: /prometheus
             pathType: Prefix
             backend:
@@ -36,7 +36,7 @@ spec:
                 port:
                   number: 9090
 
-          # Grafana Monitor
+          # Grafana Monitoring
           - path: /grafana
             pathType: Prefix
             backend:
