@@ -8,8 +8,7 @@ spec:
   ingressClassName: nginx
 
   rules:
-    - host: shopnest.com
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
