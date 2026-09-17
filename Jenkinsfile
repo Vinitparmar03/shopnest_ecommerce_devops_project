@@ -486,7 +486,7 @@ pipeline {
 
                 sh """
                     kubectl apply \
-                      -f ${WORKSPACE}/k8s/ingress.yaml \
+                      -f ${WORKSPACE}/k8s/ingress/ingress.yaml \
                       -n ${K8S_NAMESPACE}
                 """
             }
