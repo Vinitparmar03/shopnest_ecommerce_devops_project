@@ -4,16 +4,8 @@ pipeline {
 
     environment {
 
-        // =================================================
-        // Docker Hub
-        // =================================================
-
         FRONTEND_IMAGE = "vinitparmar03/ecommerce-frontend"
         BACKEND_IMAGE  = "vinitparmar03/ecommerce-backend"
-
-        // =================================================
-        // Persistent Version Storage
-        // =================================================
 
         VERSION_DIR = "/var/lib/jenkins/version-store"
 
@@ -23,12 +15,28 @@ pipeline {
         BACKEND_VERSION_FILE =
             "/var/lib/jenkins/version-store/backend.version"
 
-        // =================================================
-        // Kubernetes
-        // =================================================
-
         K8S_NAMESPACE = "default"
         MONITORING_NAMESPACE = "monitoring"
+
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"
+    }
+    stage('Configure Kubernetes') {
+        steps {
+            sh '''
+                mkdir -p "$HOME/.kube"
+
+                aws eks update-kubeconfig \
+                --region ap-south-1 \
+                --name shopnest-dev-eks \
+                --kubeconfig "$KUBECONFIG"
+
+                echo "Kubernetes context:"
+                kubectl config current-context
+
+                echo "EKS nodes:"
+                kubectl get nodes
+            '''
+        }
     }
 
     stages {
