@@ -10,7 +10,7 @@ spec:
     - http:
         paths:
 
-          # Grafana
+          # Grafana Montioring
           - path: /grafana
             pathType: Prefix
             backend:

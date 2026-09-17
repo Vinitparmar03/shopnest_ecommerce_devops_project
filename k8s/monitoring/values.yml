@@ -9,6 +9,9 @@ prometheus:
       matchLabels:
         release: monitoring
 
+    externalUrl: "http://a1320314044f548ffbec89a1f9b6d56e-920795038.ap-south-1.elb.amazonaws.com/prometheus/"
+    routePrefix: /prometheus
+
 grafana:
   enabled: true
 
@@ -17,3 +20,8 @@ grafana:
 
   ingress:
     enabled: false
+
+  grafana.ini:
+    server:
+      root_url: "%(protocol)s://%(domain)s/grafana/"
+      serve_from_sub_path: true
