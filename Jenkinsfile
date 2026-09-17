@@ -123,11 +123,11 @@ pipeline {
                             string(
                                 credentialsId: 'razorpay-key-id',
                                 variable: 'RAZORPAY_KEY_ID'
-                            )
+                            ),
                         ]) {
 
                             sh '''
-                                docker build \
+                                docker build --progress=plain\
                                   --build-arg REACT_APP_RAZORPAY_KEY_ID="$RAZORPAY_KEY_ID" \
                                   -t "$FRONTEND_IMAGE:$FRONTEND_VERSION" \
                                   ./frontend
