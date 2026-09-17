@@ -7,7 +7,7 @@ prometheus:
     ingressClassName: nginx
 
     hosts:
-      - prometheus.shopnest.com
+      - prometheus.a1320314044f548ffbec89a1f9b6d56e-920795038.ap-south-1.elb.amazonaws.com
     
     paths:
       - /
@@ -31,7 +31,7 @@ grafana:
     ingressClassName: nginx
 
     hosts:
-      - grafana.shopnest.com
+      - grafana.a1320314044f548ffbec89a1f9b6d56e-920795038.ap-south-1.elb.amazonaws.com/
     
     path: /
     
