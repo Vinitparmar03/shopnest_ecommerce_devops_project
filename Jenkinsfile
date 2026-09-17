@@ -38,6 +38,13 @@ pipeline {
         stage('Configure Kubernetes') {
             steps {
                 sh '''
+                    set -e
+
+                    echo "AWS Identity:"
+                    aws sts get-caller-identity
+
+                    echo "Configuring EKS kubeconfig..."
+
                     mkdir -p "$HOME/.kube"
 
                     aws eks update-kubeconfig \
