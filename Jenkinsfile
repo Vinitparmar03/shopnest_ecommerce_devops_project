@@ -20,24 +20,7 @@ pipeline {
 
         KUBECONFIG = "/var/lib/jenkins/.kube/config"
     }
-    stage('Configure Kubernetes') {
-        steps {
-            sh '''
-                mkdir -p "$HOME/.kube"
-
-                aws eks update-kubeconfig \
-                --region ap-south-1 \
-                --name shopnest-dev-eks \
-                --kubeconfig "$KUBECONFIG"
-
-                echo "Kubernetes context:"
-                kubectl config current-context
-
-                echo "EKS nodes:"
-                kubectl get nodes
-            '''
-        }
-    }
+    
 
     stages {
 
@@ -49,6 +32,25 @@ pipeline {
 
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Configure Kubernetes') {
+            steps {
+                sh '''
+                    mkdir -p "$HOME/.kube"
+
+                    aws eks update-kubeconfig \
+                    --region ap-south-1 \
+                    --name shopnest-dev-eks \
+                    --kubeconfig "$KUBECONFIG"
+
+                    echo "Kubernetes context:"
+                    kubectl config current-context
+
+                    echo "EKS nodes:"
+                    kubectl get nodes
+                '''
             }
         }
 
