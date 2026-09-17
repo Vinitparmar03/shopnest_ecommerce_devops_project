@@ -36,7 +36,7 @@ spec:
                 port:
                   number: 9090
 
-          # Grafana Monitor
+          # Grafana
           - path: /grafana
             pathType: Prefix
             backend:
