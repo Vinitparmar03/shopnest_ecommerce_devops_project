@@ -486,7 +486,7 @@ pipeline {
 
                 sh """
                     kubectl apply \
-                      -f ${WORKSPACE}/k8s/ingress/ingress.yaml \
+                      -f ${WORKSPACE}/k8s/ingress/ingress.yml \
                       -n ${K8S_NAMESPACE}
                 """
             }
@@ -518,7 +518,7 @@ pipeline {
                               prometheus-community/kube-prometheus-stack \
                               --namespace ${MONITORING_NAMESPACE} \
                               --create-namespace \
-                              -f ${WORKSPACE}/k8s/monitoring/values.yaml
+                              -f ${WORKSPACE}/k8s/monitoring/values.yml
                         """
                     }
                 }
@@ -534,7 +534,7 @@ pipeline {
 
                         sh """
                             kubectl apply \
-                              -f ${WORKSPACE}/k8s/monitoring/service_monitor.yaml \
+                              -f ${WORKSPACE}/k8s/monitoring/service_monitor.yml \
                               -n ${MONITORING_NAMESPACE}
                         """
                     }
