@@ -310,19 +310,6 @@ pipeline {
                                 variable: 'MONGO_URI'
                             ),
 
-                            // ---------------------------------
-                            // Google OAuth
-                            // ---------------------------------
-
-                            string(
-                                credentialsId: 'google-client-id',
-                                variable: 'GOOGLE_CLIENT_ID'
-                            ),
-
-                            string(
-                                credentialsId: 'google-client-secret',
-                                variable: 'GOOGLE_CLIENT_SECRET'
-                            ),
 
                             // ---------------------------------
                             // Cloudinary
@@ -372,7 +359,7 @@ pipeline {
                             )
 
                             // ---------------------------------
-                            // Razorpay
+                            // Backend 
                             // ---------------------------------
 
                             string(
