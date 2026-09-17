@@ -489,6 +489,12 @@ pipeline {
                       -f ${WORKSPACE}/k8s/ingress/ingress.yml \
                       -n ${K8S_NAMESPACE}
                 """
+
+                 sh """
+                    kubectl apply \
+                    -f ${WORKSPACE}/k8s/ingress/monitoring_ingress.yml \
+                    -n ${MONITORING_NAMESPACE}
+                """
             }
         }
 
