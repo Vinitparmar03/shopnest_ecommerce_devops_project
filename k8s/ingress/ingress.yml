@@ -4,9 +4,12 @@ metadata:
   name: shopnest-ingress
 spec:
   ingressClassName: nginx
+
   rules:
     - http:
         paths:
+
+          # Frontend
           - path: /
             pathType: Prefix
             backend:
@@ -15,6 +18,7 @@ spec:
                 port:
                   number: 80
 
+          # Backend
           - path: /api
             pathType: Prefix
             backend:
@@ -22,3 +26,21 @@ spec:
                 name: backend-service
                 port:
                   number: 5000
+
+          # Prometheus
+          - path: /prometheus
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-operated
+                port:
+                  number: 9090
+
+          # Grafana
+          - path: /grafana
+            pathType: Prefix
+            backend:
+              service:
+                name: monitoring-grafana
+                port:
+                  number: 80
