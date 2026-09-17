@@ -24,7 +24,7 @@ const Home = () => {
     <div className="home-container">
       <div className="hero-banner">
         <h1>Welcome to ShopNest</h1>
-        <p>Discover the best products at unbeatable prices.</p>
+        <p>Find the best products at unbeatable prices.</p>
       </div>
       <h2>Featured Products</h2>
       {loading ? (
