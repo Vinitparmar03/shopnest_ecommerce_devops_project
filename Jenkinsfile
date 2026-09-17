@@ -486,7 +486,7 @@ pipeline {
 
                 sh """
                     kubectl apply \
-                      -f k8s/ingress.yaml \
+                      -f ${WORKSPACE}/k8s/ingress.yaml \
                       -n ${K8S_NAMESPACE}
                 """
             }
@@ -518,7 +518,7 @@ pipeline {
                               prometheus-community/kube-prometheus-stack \
                               --namespace ${MONITORING_NAMESPACE} \
                               --create-namespace \
-                              -f k8s/monitoring/values.yaml
+                              -f ${WORKSPACE}/k8s/monitoring/values.yaml
                         """
                     }
                 }
@@ -534,7 +534,7 @@ pipeline {
 
                         sh """
                             kubectl apply \
-                              -f k8s/monitoring/servicemonitor.yaml \
+                              -f ${WORKSPACE}/k8s/monitoring/service_monitor.yaml \
                               -n ${MONITORING_NAMESPACE}
                         """
                     }
@@ -564,11 +564,6 @@ pipeline {
             echo "=========================================="
         }
 
-        always {
 
-            echo "Cleaning Jenkins workspace..."
-
-            cleanWs()
-        }
     }
 }
