@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  labels:
+    release: monitoring
+  name: backend-prometheus
+  namespace: monitoring
+spec:
+  endpoints:
+  - interval: 30s
+    path: /api/metrics
+    port: http
+  namespaceSelector:
+    matchNames:
+    - default
+  selector:
+    matchLabels:
+      app: backend

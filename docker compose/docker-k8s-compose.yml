@@ -1,14 +1,14 @@
 services:
   frontend:
-    image: vinitparmar03/shopnest_frontend:01
+    image: vinitparmar03/shopnest_frontend:03
     build:
       context: ../frontend
       dockerfile: dockerfile
       args:
-        - REACT_APP_RAZORPAY_KEY_ID=$REACT_APP_RAZORPAY_KEY_ID
+        REACT_APP_RAZORPAY_KEY_ID: ${REACT_APP_RAZORPAY_KEY_ID}
   
   backend:
-    image: vinitparmar03/shopnest_backend:01
+    image: vinitparmar03/shopnest_backend:04
     build:
       context: ../backend
       dockerfile: dockerfile

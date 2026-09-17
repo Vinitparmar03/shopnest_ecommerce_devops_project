@@ -16,9 +16,11 @@ spec:
     spec:
       containers:
         - name: shopnest-frontend
-          image: vinitparmar03/shopnest_frontend:01
+          image: vinitparmar03/shopnest_frontend:03
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
+      
           livenessProbe:
             httpGet:
               path: /

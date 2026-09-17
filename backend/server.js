@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const path = require('path');
+const {httpRequestCounter, httpRequestDuration} = require('./metrics/metrics');
+
 
 dotenv.config();
 connectDB();
@@ -17,6 +19,30 @@ app.use(cors({
 
 app.use(express.json());
 
+
+app.use((req, res, next) => {
+  if (req.path === "/api/metrics") {
+    return next();
+  }
+
+  const end = httpRequestDuration.startTimer();
+
+  res.on("finish", () => {
+    const labels = {
+      method: req.method,
+      route: req.path,
+      status_code: res.statusCode,
+    };
+
+    httpRequestCounter.inc(labels);
+    end(labels);
+  });
+
+  next();
+});
+
+
+app.use('/api/metrics', require('./routes/metricsRoutes'));
 app.use('/api/health', require('./routes/healthRoutes'));
 
 app.use('/api/auth', require('./routes/authRoutes'));

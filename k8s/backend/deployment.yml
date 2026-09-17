@@ -17,9 +17,23 @@ spec:
     spec:
       containers:
         - name: shopnest-backend
-          image: vinitparmar03/shopnest_backend:01
+          image: vinitparmar03/shopnest_backend:04
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: authentication-secret
+            - secretRef:
+                name: cloudinary-secret
+            - secretRef:
+                name: gmail-secret
+            - secretRef:
+                name: mongodb-secret
+            - secretRef:
+                name: razorpay-secret
           livenessProbe:
             exec:
               command:
