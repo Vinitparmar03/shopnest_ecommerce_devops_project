@@ -36,11 +36,11 @@ spec:
                 port:
                   number: 9090
 
-          # Grafana
+          # Grafana Monitor
           - path: /grafana
             pathType: Prefix
             backend:
               service:
                 name: monitoring-grafana
                 port:
-                  number: 80
+                  number: 80 

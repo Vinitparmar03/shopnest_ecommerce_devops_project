@@ -479,20 +479,12 @@ pipeline {
         stage('Kubernetes Configuration') {
 
             when {
-                changeset "k8s/**"
+                changeset "k8s/ingress/**"
             }
 
             steps {
 
                 sh """
-                    kubectl apply \
-                      -f k8s/frontend/ \
-                      -n ${K8S_NAMESPACE}
-
-                    kubectl apply \
-                      -f k8s/backend/ \
-                      -n ${K8S_NAMESPACE}
-
                     kubectl apply \
                       -f k8s/ingress.yaml \
                       -n ${K8S_NAMESPACE}
