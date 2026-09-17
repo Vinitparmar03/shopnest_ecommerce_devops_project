@@ -1,4 +1,3 @@
-```groovy
 pipeline {
 
     agent any
@@ -12,7 +11,6 @@ pipeline {
         FRONTEND_IMAGE = "vinitparmar03/ecommerce-frontend"
         BACKEND_IMAGE  = "vinitparmar03/ecommerce-backend"
 
-
         // =================================================
         // Persistent Version Storage
         // =================================================
@@ -25,7 +23,6 @@ pipeline {
         BACKEND_VERSION_FILE =
             "/var/lib/jenkins/version-store/backend.version"
 
-
         // =================================================
         // Kubernetes
         // =================================================
@@ -33,7 +30,6 @@ pipeline {
         K8S_NAMESPACE = "default"
         MONITORING_NAMESPACE = "monitoring"
     }
-
 
     stages {
 
@@ -44,9 +40,7 @@ pipeline {
         stage('Checkout') {
 
             steps {
-
                 checkout scm
-
             }
         }
 
@@ -92,8 +86,7 @@ pipeline {
                                 echo "${version}" > "${FRONTEND_VERSION_FILE}"
                             """
 
-                            env.FRONTEND_VERSION =
-                                version.toString()
+                            env.FRONTEND_VERSION = version.toString()
 
                             echo "Frontend version: ${env.FRONTEND_VERSION}"
                         }
@@ -118,9 +111,9 @@ pipeline {
 
                             sh '''
                                 docker build \
-                                --build-arg REACT_APP_RAZORPAY_KEY_ID="$RAZORPAY_KEY_ID" \
-                                -t "$FRONTEND_IMAGE:$FRONTEND_VERSION" \
-                                ./frontend
+                                  --build-arg REACT_APP_RAZORPAY_KEY_ID="$RAZORPAY_KEY_ID" \
+                                  -t "$FRONTEND_IMAGE:$FRONTEND_VERSION" \
+                                  ./frontend
                             '''
                         }
                     }
@@ -224,8 +217,7 @@ pipeline {
                                 echo "${version}" > "${BACKEND_VERSION_FILE}"
                             """
 
-                            env.BACKEND_VERSION =
-                                version.toString()
+                            env.BACKEND_VERSION = version.toString()
 
                             echo "Backend version: ${env.BACKEND_VERSION}"
                         }
@@ -292,29 +284,19 @@ pipeline {
 
                         withCredentials([
 
-                            // ---------------------------------
                             // JWT
-                            // ---------------------------------
-
                             string(
                                 credentialsId: 'jwt-secret',
                                 variable: 'JWT_SECRET'
                             ),
 
-                            // ---------------------------------
                             // MongoDB
-                            // ---------------------------------
-
                             string(
                                 credentialsId: 'mongo-uri',
                                 variable: 'MONGO_URI'
                             ),
 
-
-                            // ---------------------------------
                             // Cloudinary
-                            // ---------------------------------
-
                             string(
                                 credentialsId: 'cloudinary-cloud-name',
                                 variable: 'CLOUDINARY_CLOUD_NAME'
@@ -330,10 +312,7 @@ pipeline {
                                 variable: 'CLOUDINARY_API_SECRET'
                             ),
 
-                            // ---------------------------------
                             // Gmail
-                            // ---------------------------------
-
                             string(
                                 credentialsId: 'gmail-user',
                                 variable: 'GMAIL_USER'
@@ -344,10 +323,7 @@ pipeline {
                                 variable: 'GMAIL_PASS'
                             ),
 
-                            // ---------------------------------
                             // Razorpay
-                            // ---------------------------------
-
                             string(
                                 credentialsId: 'razorpay-key-id',
                                 variable: 'RAZORPAY_KEY_ID'
@@ -356,24 +332,21 @@ pipeline {
                             string(
                                 credentialsId: 'razorpay-key-secret',
                                 variable: 'RAZORPAY_KEY_SECRET'
-                            )
+                            ),
 
-                            // ---------------------------------
-                            // Backend 
-                            // ---------------------------------
-
+                            // Backend Config
                             string(
-                                credientialId: 'frontend-url',
+                                credentialsId: 'frontend-url',
                                 variable: 'FRONTEND_URL'
-                            )
+                            ),
 
                             string(
-                                credientialId: 'node-env',
+                                credentialsId: 'node-env',
                                 variable: 'NODE_ENV'
-                            )
+                            ),
 
                             string(
-                                credientialId: 'port',
+                                credentialsId: 'port',
                                 variable: 'PORT'
                             )
 
@@ -390,7 +363,7 @@ pipeline {
                                   --from-literal=JWT_SECRET="$JWT_SECRET" \
                                   --dry-run=client \
                                   -o yaml | \
-                                  kubectl apply -f -
+                                  kubectl apply -n "$K8S_NAMESPACE" -f -
 
 
                                 # =================================
@@ -401,7 +374,7 @@ pipeline {
                                   --from-literal=MONGO_URI="$MONGO_URI" \
                                   --dry-run=client \
                                   -o yaml | \
-                                  kubectl apply -f -
+                                  kubectl apply -n "$K8S_NAMESPACE" -f -
 
 
                                 # =================================
@@ -414,7 +387,7 @@ pipeline {
                                   --from-literal=CLOUDINARY_API_SECRET="$CLOUDINARY_API_SECRET" \
                                   --dry-run=client \
                                   -o yaml | \
-                                  kubectl apply -f -
+                                  kubectl apply -n "$K8S_NAMESPACE" -f -
 
 
                                 # =================================
@@ -426,7 +399,7 @@ pipeline {
                                   --from-literal=GMAIL_PASS="$GMAIL_PASS" \
                                   --dry-run=client \
                                   -o yaml | \
-                                  kubectl apply -f -
+                                  kubectl apply -n "$K8S_NAMESPACE" -f -
 
 
                                 # =================================
@@ -438,20 +411,20 @@ pipeline {
                                   --from-literal=RAZORPAY_KEY_SECRET="$RAZORPAY_KEY_SECRET" \
                                   --dry-run=client \
                                   -o yaml | \
-                                  kubectl apply -f -
-                                  
+                                  kubectl apply -n "$K8S_NAMESPACE" -f -
+
 
                                 # =================================
-                                # Backend Secret
+                                # Backend ConfigMap
                                 # =================================
 
-                                kubectl create configmap backend-config \\
-                                  --from-literal=FRONTEND_URL="$FRONTEND_URL" \\
-                                  --from-literal=NODE_ENV="$NODE_ENV" \\
-                                  --from-literal=PORT="$PORT" \\
-                                  --dry-run=client \\
-                                  -o yaml | \\
-                                  kubectl apply -f -
+                                kubectl create configmap backend-config \
+                                  --from-literal=FRONTEND_URL="$FRONTEND_URL" \
+                                  --from-literal=NODE_ENV="$NODE_ENV" \
+                                  --from-literal=PORT="$PORT" \
+                                  --dry-run=client \
+                                  -o yaml | \
+                                  kubectl apply -n "$K8S_NAMESPACE" -f -
                             '''
                         }
                     }
@@ -469,7 +442,7 @@ pipeline {
                         sh """
                             kubectl set image \
                               deployment/backend-deployment \
-                              backend=${BACKEND_IMAGE}:${BACKEND_VERSION} \
+                              shopnest-backend=${BACKEND_IMAGE}:${BACKEND_VERSION} \
                               -n ${K8S_NAMESPACE}
 
                             kubectl rollout status \
@@ -524,14 +497,10 @@ pipeline {
             stages {
 
                 // =========================================
-                // Helm values changed
+                // Monitoring Stack
                 // =========================================
 
                 stage('Upgrade Monitoring Stack') {
-
-                    when {
-                        changeset "k8s/monitoring/values.yaml"
-                    }
 
                     steps {
 
@@ -542,25 +511,15 @@ pipeline {
                               --create-namespace \
                               -f k8s/monitoring/values.yaml
                         """
-
-                        sh """
-                            kubectl apply \
-                              -f k8s/monitoring/service_monitor.yaml \
-                              -n ${MONITORING_NAMESPACE}
-                        """
                     }
                 }
 
 
                 // =========================================
-                // ServiceMonitor changed
+                // Apply ServiceMonitor
                 // =========================================
 
                 stage('Apply ServiceMonitor') {
-
-                    when {
-                        changeset "k8s/monitoring/servicemonitor.yaml"
-                    }
 
                     steps {
 
@@ -573,7 +532,6 @@ pipeline {
                 }
             }
         }
-
     }
 
 
@@ -588,7 +546,6 @@ pipeline {
             echo "=========================================="
             echo "Pipeline completed successfully"
             echo "=========================================="
-
         }
 
         failure {
@@ -596,7 +553,6 @@ pipeline {
             echo "=========================================="
             echo "Pipeline failed"
             echo "=========================================="
-
         }
 
         always {
@@ -607,4 +563,3 @@ pipeline {
         }
     }
 }
-```
