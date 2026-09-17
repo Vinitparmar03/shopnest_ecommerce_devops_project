@@ -85,3 +85,16 @@
 #     aws_subnet.private_subnet_2.id
 #   ]
 # }
+
+
+output "cluster_primary_security_group_id" {
+  description = "The cluster primary security group ID created by EKS"
+  value       = module.eks.cluster_primary_security_group_id
+}
+
+output "cluster_security_group_id" {
+  description = "The cluster security group ID"
+  value       = module.eks.cluster_security_group_id
+}
+
+

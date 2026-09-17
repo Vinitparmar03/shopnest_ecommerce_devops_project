@@ -25,6 +25,8 @@ resource "aws_instance" "jenkins" {
 
   subnet_id = aws_subnet.public_subnet_1.id
 
+  key_name = "mywebserver-key"
+
   iam_instance_profile = aws_iam_instance_profile.jenkins.name
 
   vpc_security_group_ids = [

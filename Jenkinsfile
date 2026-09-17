@@ -418,18 +418,6 @@ pipeline {
 
 
                                 # =================================
-                                # Google OAuth Secret
-                                # =================================
-
-                                kubectl create secret generic google-secret \
-                                  --from-literal=GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" \
-                                  --from-literal=GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" \
-                                  --dry-run=client \
-                                  -o yaml | \
-                                  kubectl apply -f -
-
-
-                                # =================================
                                 # Cloudinary Secret
                                 # =================================
 

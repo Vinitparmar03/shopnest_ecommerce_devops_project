@@ -1,15 +1,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-
 metadata:
   name: shopnest-ingress
-
 spec:
   ingressClassName: nginx
-
   rules:
-    - host: shopnest.com
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
