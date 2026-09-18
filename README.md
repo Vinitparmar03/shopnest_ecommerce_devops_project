@@ -45,7 +45,6 @@ cp env.example .env
 
 Then update the `.env` files with your required configuration values.
 
-> ⚠️ Do not commit your `.env` files to GitHub. They may contain sensitive information such as API keys, database credentials, and secrets.
 
 ### 2. Start the Application
 
@@ -91,4 +90,447 @@ Or, if the containers are running in detached mode:
 
 ```bash
 docker compose -f docker-compose.yml down
+```
+
+
+
+
+## ☸️ Running the Project on Kubernetes with Minikube
+
+ShopNest can also be deployed locally using **Kubernetes and Minikube**.
+
+The Kubernetes setup includes:
+
+- Frontend Deployment & Service
+- Backend Deployment & Service
+- Kubernetes Ingress
+- Kubernetes Secrets & ConfigMaps
+- Horizontal Pod Autoscaler (HPA)
+- NGINX Ingress Controller
+- Prometheus
+- Grafana
+- ServiceMonitor
+
+---
+
+## 1. Start Minikube
+
+First, make sure Minikube is installed and start the cluster:
+
+```bash
+minikube start
+```
+
+Check the Minikube cluster:
+
+```bash
+minikube status
+```
+
+---
+
+## 2. Configure Local Hostnames
+
+After starting Minikube, find its IP address:
+
+```bash
+minikube ip
+```
+
+For example, if Minikube returns:
+
+```text
+192.168.49.2
+```
+
+you need to map this IP address to the ShopNest, Prometheus, and Grafana hostnames in your `/etc/hosts` file.
+
+Open the file:
+
+```bash
+sudo nano /etc/hosts
+```
+
+Add:
+
+```text
+192.168.49.2    shopnest.com
+192.168.49.2    prometheus.shopnest.com
+192.168.49.2    grafana.shopnest.com
+```
+
+Save the file.
+
+> **Note:** The Minikube IP can be different on your machine. Always use the IP returned by `minikube ip`.
+
+---
+
+## 3. Update the Frontend Ingress Configuration
+
+Before deploying the application, update the local Ingress configuration.
+
+After cloning the repository, open:
+
+```text
+k8s/ingress/ingress.yml
+```
+
+If the Ingress currently looks like:
+
+```yaml
+rules:
+  - http:
+      paths:
+        - path: /
+```
+
+change it to:
+
+```yaml
+rules:
+  - host: shopnest.com
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+```
+
+### Why?
+
+The `host` field tells Kubernetes that requests for:
+
+```text
+shopnest.com
+```
+
+should be handled by this Ingress rule.
+
+For a single host, use:
+
+```yaml
+host: shopnest.com
+```
+
+**not:**
+
+```yaml
+hosts: shopnest.com
+```
+
+---
+
+## 4. Configure Kubernetes Secrets
+
+The repository contains a `k8s/secret/` directory containing the required Kubernetes Secret and configuration files.
+
+These include:
+
+- Authentication Secret
+- Backend Configuration
+- Cloudinary Secret
+- Gmail Secret
+- MongoDB Secret
+- Razorpay Secret
+
+Before applying the Kubernetes manifests, update the values in these files with your own credentials and configuration.
+
+For example:
+
+```yaml
+stringData:
+  JWT_SECRET: "YOUR_SECRET"
+```
+
+Replace the placeholder values with your actual values.
+
+> ⚠️ **Important:** Do not commit real passwords, API keys, database credentials, or other sensitive information to GitHub. Use placeholder values in the repository and provide your own secrets locally.
+
+---
+
+## 5. Configure Prometheus and Grafana
+
+The monitoring configuration is located in:
+
+```text
+k8s/monitoring/
+```
+
+Before installing the monitoring stack, configure the local Helm values file:
+
+```text
+values_local.yml
+```
+
+A local configuration can look like:
+
+```yaml
+prometheus:
+  enabled: true
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus.shopnest.com
+    paths:
+      - /
+    pathType: Prefix
+
+  prometheusSpec:
+    serviceMonitorSelector:
+      matchLabels:
+        release: monitoring
+
+grafana:
+  enabled: true
+
+  adminUser: admin
+  adminPassword: admin
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.shopnest.com
+    path: /
+    pathType: Prefix
+```
+
+### Important
+
+For Prometheus and Grafana, `hosts:` is used because the Helm chart expects a **list of hosts**:
+
+```yaml
+hosts:
+  - prometheus.shopnest.com
+```
+
+and:
+
+```yaml
+hosts:
+  - grafana.shopnest.com
+```
+
+For the application Ingress rule, use the singular:
+
+```yaml
+host: shopnest.com
+```
+
+---
+
+## 6. Install NGINX Ingress Controller
+
+Enable the NGINX Ingress Controller in Minikube:
+
+```bash
+minikube addons enable ingress
+```
+
+Check that the controller is running:
+
+```bash
+kubectl get pods -n ingress-nginx
+```
+
+---
+
+## 7. Install Prometheus and Grafana Using Helm
+
+Add the Prometheus Community Helm repository:
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+```
+
+Update the Helm repositories:
+
+```bash
+helm repo update
+```
+
+Create the monitoring namespace:
+
+```bash
+kubectl create namespace monitoring
+```
+
+Install the `kube-prometheus-stack`:
+
+```bash
+helm install monitoring \
+  prometheus-community/kube-prometheus-stack \
+  -n monitoring \
+  -f ./k8s/monitoring/values_local.yml
+```
+
+This installs the monitoring stack, including **Prometheus and Grafana**, into the `monitoring` namespace.
+
+Check the monitoring pods:
+
+```bash
+kubectl get pods -n monitoring
+```
+
+---
+
+## 8. Deploy the Application
+
+Once the required configuration has been updated, apply the Kubernetes manifests.
+
+From the project root, run:
+
+```bash
+kubectl apply -f ./backend
+kubectl apply -f ./frontend
+kubectl apply -f ./ingress/ingress.yml
+kubectl apply -f ./monitoring/service_monitor.yml
+```
+
+If your project structure contains the manifests under `k8s/`, use:
+
+```bash
+kubectl apply -f ./k8s/backend
+kubectl apply -f ./k8s/frontend
+kubectl apply -f ./k8s/ingress/ingress.yml
+kubectl apply -f ./k8s/monitoring/service_monitor.yml
+```
+
+Apply your Secrets/ConfigMaps as well if they are stored separately:
+
+```bash
+kubectl apply -f ./k8s/secret
+```
+
+---
+
+## 9. Verify the Deployment
+
+Check all pods:
+
+```bash
+kubectl get pods
+```
+
+Check services:
+
+```bash
+kubectl get services
+```
+
+Check the Ingress:
+
+```bash
+kubectl get ingress
+```
+
+Check HPA:
+
+```bash
+kubectl get hpa
+```
+
+Check Prometheus and Grafana:
+
+```bash
+kubectl get pods -n monitoring
+```
+
+---
+
+## 10. Access the Applications
+
+Once everything is running, you can access the applications using the hostnames configured in `/etc/hosts`.
+
+### 🛒 ShopNest
+
+```text
+http://shopnest.com
+```
+
+### 📊 Prometheus
+
+```text
+http://prometheus.shopnest.com
+```
+
+### 📈 Grafana
+
+```text
+http://grafana.shopnest.com
+```
+
+For the local Grafana configuration above:
+
+```text
+Username: admin
+Password: admin
+```
+
+> ⚠️ Change the default Grafana password when using this setup beyond local development.
+
+---
+
+## 🔍 Useful Kubernetes Commands
+
+View all resources:
+
+```bash
+kubectl get all
+```
+
+View resources in the monitoring namespace:
+
+```bash
+kubectl get all -n monitoring
+```
+
+View pod logs:
+
+```bash
+kubectl logs <pod-name>
+```
+
+Describe a pod:
+
+```bash
+kubectl describe pod <pod-name>
+```
+
+Check HPA:
+
+```bash
+kubectl get hpa
+```
+
+Check Ingress:
+
+```bash
+kubectl describe ingress
+```
+
+---
+
+## 🧹 Remove the Kubernetes Deployment
+
+To remove the application resources:
+
+```bash
+kubectl delete -f ./backend
+kubectl delete -f ./frontend
+kubectl delete -f ./ingress/ingress.yml
+kubectl delete -f ./monitoring/service_monitor.yml
+```
+
+To remove the monitoring stack:
+
+```bash
+helm uninstall monitoring -n monitoring
+```
+
+To stop Minikube:
+
+```bash
+minikube stop
 ```
