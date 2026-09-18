@@ -243,84 +243,10 @@ stringData:
 
 Replace the placeholder values with your actual values.
 
-> ⚠️ **Important:** Do not commit real passwords, API keys, database credentials, or other sensitive information to GitHub. Use placeholder values in the repository and provide your own secrets locally.
 
 ---
 
-## 5. Configure Prometheus and Grafana
-
-The monitoring configuration is located in:
-
-```text
-k8s/monitoring/
-```
-
-Before installing the monitoring stack, configure the local Helm values file:
-
-```text
-values_local.yml
-```
-
-A local configuration can look like:
-
-```yaml
-prometheus:
-  enabled: true
-
-  ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - prometheus.shopnest.com
-    paths:
-      - /
-    pathType: Prefix
-
-  prometheusSpec:
-    serviceMonitorSelector:
-      matchLabels:
-        release: monitoring
-
-grafana:
-  enabled: true
-
-  adminUser: admin
-  adminPassword: admin
-
-  ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - grafana.shopnest.com
-    path: /
-    pathType: Prefix
-```
-
-### Important
-
-For Prometheus and Grafana, `hosts:` is used because the Helm chart expects a **list of hosts**:
-
-```yaml
-hosts:
-  - prometheus.shopnest.com
-```
-
-and:
-
-```yaml
-hosts:
-  - grafana.shopnest.com
-```
-
-For the application Ingress rule, use the singular:
-
-```yaml
-host: shopnest.com
-```
-
----
-
-## 6. Install NGINX Ingress Controller
+## 5. Install NGINX Ingress Controller
 
 Enable the NGINX Ingress Controller in Minikube:
 
@@ -336,7 +262,7 @@ kubectl get pods -n ingress-nginx
 
 ---
 
-## 7. Install Prometheus and Grafana Using Helm
+## 6. Install Prometheus and Grafana Using Helm
 
 Add the Prometheus Community Helm repository:
 
@@ -375,7 +301,7 @@ kubectl get pods -n monitoring
 
 ---
 
-## 8. Deploy the Application
+## 7. Deploy the Application
 
 Once the required configuration has been updated, apply the Kubernetes manifests.
 
@@ -405,7 +331,7 @@ kubectl apply -f ./k8s/secret
 
 ---
 
-## 9. Verify the Deployment
+## 8. Verify the Deployment
 
 Check all pods:
 
@@ -439,7 +365,7 @@ kubectl get pods -n monitoring
 
 ---
 
-## 10. Access the Applications
+## 9. Access the Applications
 
 Once everything is running, you can access the applications using the hostnames configured in `/etc/hosts`.
 
