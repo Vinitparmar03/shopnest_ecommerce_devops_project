@@ -308,15 +308,6 @@ Once the required configuration has been updated, apply the Kubernetes manifests
 From the project root, run:
 
 ```bash
-kubectl apply -f ./backend
-kubectl apply -f ./frontend
-kubectl apply -f ./ingress/ingress.yml
-kubectl apply -f ./monitoring/service_monitor.yml
-```
-
-If your project structure contains the manifests under `k8s/`, use:
-
-```bash
 kubectl apply -f ./k8s/backend
 kubectl apply -f ./k8s/frontend
 kubectl apply -f ./k8s/ingress/ingress.yml
